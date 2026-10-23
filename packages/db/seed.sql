@@ -5,7 +5,7 @@ INSERT OR IGNORE INTO members (id, email, name, role, joined_at) VALUES
   (2, 'ana@example.com', 'Ana Rossi', 'member', '2026-03-02T00:00:00.000Z'),
   (3, 'ben@example.com', 'Ben Walker', 'member', '2026-06-20T00:00:00.000Z');
 
-INSERT OR IGNORE INTO rooms (id, name, capacity, archived) VALUES
-  (1, 'Harbour', 10, 0),
-  (2, 'Bridge', 2, 0),
-  (3, 'Quay', 6, 0);
+INSERT OR IGNORE INTO rooms (id, name, capacity, archived, equipment, photo_url) VALUES
+  (1, 'Harbour', 10, 0, '["Projector","Video conferencing","Whiteboard"]', 'https://images.unsplash.com/photo-1431540015161-0bf868a2d407?w=1200&auto=format&fit=crop&q=80'),
+  (2, 'Bridge', 2, 0, '["Screen / TV","Speakerphone"]', 'https://images.unsplash.com/photo-1664464683253-bc7258ede7fe?w=1200&auto=format&fit=crop&q=80'),
+  (3, 'Quay', 6, 0, '["Screen / TV","Whiteboard","Wheelchair accessible"]', 'https://images.unsplash.com/photo-1717414477663-a5f5384499b0?w=1200&auto=format&fit=crop&q=80');

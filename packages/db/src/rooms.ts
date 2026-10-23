@@ -3,21 +3,25 @@
 // template so they run on the same `Database`, but never rewritten.
 import { sql } from "drizzle-orm";
 import type { Database } from "./schema.ts";
-import type { Room } from "./shared.ts";
+import type { Equipment, Room } from "./shared.ts";
 
 interface RoomRecord {
   archived: number;
   capacity: number;
+  equipment: string;
   id: number;
   name: string;
+  photo_url: string | null;
 }
 
 function mapRoom(r: RoomRecord): Room {
   return {
     archived: r.archived === 1,
     capacity: r.capacity,
+    equipment: JSON.parse(r.equipment) as Equipment[],
     id: String(r.id),
     name: r.name,
+    photoUrl: r.photo_url,
   };
 }
 
@@ -27,15 +31,15 @@ export async function listRooms(
 ): Promise<Room[]> {
   const records = await db.all<RoomRecord>(
     opts.includeArchived
-      ? sql`select id, name, capacity, archived from rooms order by name`
-      : sql`select id, name, capacity, archived from rooms where archived = 0 order by name`
+      ? sql`select id, name, capacity, archived, equipment, photo_url from rooms order by name`
+      : sql`select id, name, capacity, archived, equipment, photo_url from rooms where archived = 0 order by name`
   );
   return records.map(mapRoom);
 }
 
 export async function getRoom(db: Database, id: string): Promise<Room | null> {
   const records = await db.all<RoomRecord>(
-    sql`select id, name, capacity, archived from rooms where id = ${Number(id)}`
+    sql`select id, name, capacity, archived, equipment, photo_url from rooms where id = ${Number(id)}`
   );
   return records.length > 0 ? mapRoom(records[0] as RoomRecord) : null;
 }
@@ -43,10 +47,11 @@ export async function getRoom(db: Database, id: string): Promise<Room | null> {
 export async function insertRoom(
   db: Database,
   name: string,
-  capacity: number
+  capacity: number,
+  details: { equipment?: Equipment[]; photoUrl?: string | null } = {}
 ): Promise<Room> {
   const records = await db.all<RoomRecord>(
-    sql`insert into rooms (name, capacity) values (${name}, ${capacity}) returning id, name, capacity, archived`
+    sql`insert into rooms (name, capacity, equipment, photo_url) values (${name}, ${capacity}, ${JSON.stringify(details.equipment ?? [])}, ${details.photoUrl ?? null}) returning id, name, capacity, archived, equipment, photo_url`
   );
   return mapRoom(records[0] as RoomRecord);
 }

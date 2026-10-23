@@ -9,15 +9,39 @@ import {
   setRoomArchived,
 } from "@repo/db/rooms";
 import {
+  EQUIPMENT_OPTIONS,
   ROOM_CAPACITY_MAX,
   ROOM_NAME_MAX_LENGTH,
+  ROOM_PHOTO_URL_MAX_LENGTH,
   type Room,
 } from "@repo/db/shared";
 import { z } from "zod";
 
+function isHttpsUrl(value: string): boolean {
+  try {
+    return new URL(value).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+const photoUrlInput = z
+  .string()
+  .trim()
+  .max(ROOM_PHOTO_URL_MAX_LENGTH)
+  .refine((value) => value === "" || isHttpsUrl(value), {
+    message: "Photo URL must be a valid https:// link.",
+  })
+  .transform((value) => (value === "" ? null : value));
+
 export const addRoomInput = z.object({
   capacity: z.int().min(1).max(ROOM_CAPACITY_MAX),
+  equipment: z
+    .array(z.enum(EQUIPMENT_OPTIONS))
+    .default([])
+    .transform((items) => [...new Set(items)]),
   name: z.string().trim().min(1).max(ROOM_NAME_MAX_LENGTH),
+  photoUrl: photoUrlInput.nullish().transform((value) => value ?? null),
 });
 
 export type AddRoomInput = z.input<typeof addRoomInput>;
@@ -50,7 +74,12 @@ export const createRoomsService = (db: Database): RoomsService => ({
       };
     }
     try {
-      const room = await insertRoom(db, parsed.data.name, parsed.data.capacity);
+      const room = await insertRoom(
+        db,
+        parsed.data.name,
+        parsed.data.capacity,
+        { equipment: parsed.data.equipment, photoUrl: parsed.data.photoUrl }
+      );
       return { ok: true, room };
     } catch (error) {
       if (isUniqueViolation(error)) {

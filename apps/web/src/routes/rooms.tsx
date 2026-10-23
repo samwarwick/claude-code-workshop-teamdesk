@@ -1,4 +1,10 @@
-import { ROOM_CAPACITY_MAX, ROOM_NAME_MAX_LENGTH } from "@repo/db/shared";
+import {
+  EQUIPMENT_OPTIONS,
+  type Equipment,
+  ROOM_CAPACITY_MAX,
+  ROOM_NAME_MAX_LENGTH,
+  ROOM_PHOTO_URL_MAX_LENGTH,
+} from "@repo/db/shared";
 import { createFileRoute } from "@tanstack/react-router";
 import { type FormEvent, useCallback } from "react";
 import FormError from "#/components/form-error";
@@ -41,7 +47,9 @@ function RoomsPage() {
           actorId,
           room: {
             capacity: Number(data.get("capacity")),
+            equipment: data.getAll("equipment").map(String) as Equipment[],
             name: String(data.get("name") ?? ""),
+            photoUrl: String(data.get("photoUrl") ?? ""),
           },
         })
       );
@@ -100,6 +108,23 @@ function RoomsPage() {
             {addRoom.pending ? "Adding…" : "Add room"}
           </Button>
         </div>
+        <Input
+          aria-label="Photo URL"
+          className="mt-3"
+          maxLength={ROOM_PHOTO_URL_MAX_LENGTH}
+          name="photoUrl"
+          placeholder="Photo URL (https://...)"
+          type="text"
+        />
+        <fieldset className="mt-3 flex flex-wrap gap-x-4 gap-y-2 border-0 p-0">
+          <legend className="sr-only">Equipment</legend>
+          {EQUIPMENT_OPTIONS.map((item) => (
+            <label className="flex items-center gap-2 text-sm" key={item}>
+              <input name="equipment" type="checkbox" value={item} />
+              {item}
+            </label>
+          ))}
+        </fieldset>
         <FormError message={addRoom.error} />
       </form>
 
