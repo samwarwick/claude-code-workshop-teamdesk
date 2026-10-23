@@ -24,11 +24,24 @@ export interface Member {
   role: MemberRole;
 }
 
+export const EQUIPMENT_OPTIONS = [
+  "Projector",
+  "Screen / TV",
+  "Whiteboard",
+  "Video conferencing",
+  "Speakerphone",
+  "Standing desk",
+  "Wheelchair accessible",
+] as const;
+export type Equipment = (typeof EQUIPMENT_OPTIONS)[number];
+
 export interface Room {
   archived: boolean;
   capacity: number;
+  equipment: Equipment[];
   id: string;
   name: string;
+  photoUrl: string | null;
 }
 
 export interface Booking {
@@ -64,6 +77,7 @@ export interface Announcement {
 export const MEMBER_NAME_MAX_LENGTH = 80;
 export const ROOM_NAME_MAX_LENGTH = 60;
 export const ROOM_CAPACITY_MAX = 200;
+export const ROOM_PHOTO_URL_MAX_LENGTH = 500;
 export const BOOKING_TITLE_MAX_LENGTH = 120;
 export const BOOKING_MIN_MINUTES = 15;
 export const BOOKING_MAX_MINUTES = 240;

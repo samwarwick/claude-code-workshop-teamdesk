@@ -43,8 +43,12 @@ export const rooms = sqliteTable("rooms", {
   // 0 or 1. An archived room keeps its past bookings but takes no new ones.
   archived: integer("archived").notNull().default(0),
   capacity: integer("capacity").notNull(),
+  // JSON array of Equipment strings.
+  equipment: text("equipment").notNull().default("[]"),
   id: integer("id").primaryKey({ autoIncrement: true }),
   name: text("name").notNull().unique(),
+  // https URL of an image, or null.
+  photoUrl: text("photo_url"),
 });
 
 export const bookings = sqliteTable(
