@@ -12,6 +12,15 @@ export default function RoomDetails({ room }: RoomDetailsProps) {
     () => setFailedUrl(room.photoUrl),
     [room.photoUrl]
   );
+  // An image that failed before hydration never fires onError, so check on mount.
+  const handleRef = useCallback(
+    (img: HTMLImageElement | null) => {
+      if (img?.complete && img.naturalWidth === 0) {
+        setFailedUrl(room.photoUrl);
+      }
+    },
+    [room.photoUrl]
+  );
   const showPhoto = room.photoUrl !== null && failedUrl !== room.photoUrl;
 
   return (
@@ -24,6 +33,7 @@ export default function RoomDetails({ room }: RoomDetailsProps) {
           height={64}
           loading="lazy"
           onError={handleError}
+          ref={handleRef}
           src={room.photoUrl ?? undefined}
           width={96}
         />
