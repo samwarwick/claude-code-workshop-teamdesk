@@ -25,7 +25,10 @@ Ends with a working, tested backend; UI untouched and still compiling.
 3. In `packages/db`: `bun run generate`, then review the SQL and commit all of `migrations/` including `meta/`; `bun run db:apply`.
 4. `packages/db/src/rooms.ts`: add columns to `RoomRecord` and every select/returning list; `mapRoom` does `JSON.parse` on equipment and maps `photo_url` to `photoUrl`; `insertRoom(db, name, capacity, details = {})` stores `JSON.stringify(equipment ?? [])` and `photoUrl ?? null`. No validation here.
 5. `packages/services/src/rooms.ts`: extend `addRoomInput` with `equipment` (`z.array(z.enum(EQUIPMENT_OPTIONS))`, de-duplicated via transform, default `[]`) and `photoUrl` (trim; `""` becomes `null`; must parse with `new URL` and `protocol === "https:"`; max length). Pass to `insertRoom`. Keep admin check and `{ ok, error }`.
-6. `packages/db/seed.sql`: give a couple of rooms equipment and a photo URL.
+6. `packages/db/seed.sql`: update the three existing rooms (the seed `INSERT` currently sets only id, name, capacity, archived) with equipment and a photo URL.
+   - Photos: source free stock meeting-room photos (e.g. Unsplash), check each licence allows hotlinking, and use direct `https://` image links. Harbour (seats 10): large boardroom. Bridge (seats 2): small two-person room. Quay (seats 6): mid-size room. Links can't be verified long term; a broken one falls back to the placeholder.
+   - Equipment: Harbour gets Projector, Video conferencing, Whiteboard; Bridge gets Screen / TV, Speakerphone; Quay gets a sensible mix (e.g. Screen / TV, Whiteboard, Wheelchair accessible).
+   - Repo-hosted images are not an option: relative paths and `data:` URIs fail the `https:`-only rule.
 7. Tests:
    - `packages/db/src/rooms.test.ts`: round-trip equipment and photo; rooms without them return `[]` / `null`.
    - `packages/services/src/rooms.test.ts`: admin adds with equipment + photo; non-admin refused; unknown equipment, `http:`/non-URL and over-long URL rejected; duplicate equipment collapses; empty photo URL stored as `null`.
