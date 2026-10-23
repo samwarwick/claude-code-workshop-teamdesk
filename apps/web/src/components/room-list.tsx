@@ -1,5 +1,6 @@
 import type { Room } from "@repo/db/shared";
 import { type MouseEvent, useCallback } from "react";
+import RoomDetails from "#/components/room-details";
 import { Button } from "#/components/ui/button";
 
 interface RoomListProps {
@@ -29,11 +30,14 @@ export default function RoomList({
           className="flex items-center justify-between gap-4 border-border border-t pt-4"
           key={room.id}
         >
-          <div>
-            <p className="m-0 font-semibold text-foreground">{room.name}</p>
-            <p className="m-0 text-muted-foreground text-sm">
-              Seats {room.capacity}
-            </p>
+          <div className="flex flex-col gap-2">
+            <div>
+              <p className="m-0 font-semibold text-foreground">{room.name}</p>
+              <p className="m-0 text-muted-foreground text-sm">
+                Seats {room.capacity}
+              </p>
+            </div>
+            <RoomDetails room={room} />
           </div>
           <Button
             disabled={disabled}

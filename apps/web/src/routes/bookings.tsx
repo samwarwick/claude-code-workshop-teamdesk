@@ -14,6 +14,7 @@ import BookingList from "#/components/bookings/BookingList";
 import FormError from "#/components/form-error";
 import MemberPicker from "#/components/member-picker";
 import PageError from "#/components/page-error";
+import RoomDetails from "#/components/room-details";
 import { Input } from "#/components/ui/input";
 import {
   NativeSelect,
@@ -193,6 +194,10 @@ function BookingsPage() {
               value={day}
             />
           </section>
+
+          <div className="mt-4">
+            <RoomDetails room={room} />
+          </div>
 
           <div className="mt-6">
             <BookingForm
